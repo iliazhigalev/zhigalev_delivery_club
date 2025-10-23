@@ -83,7 +83,7 @@ async def trigger_compute():
 
 @app.get("/")
 async def root():
-    return {"message": "FastAPI backend is running 🚀"}
+    return {"message": "FastAPI backend is running"}
 
 
 if __name__ == "__main__":

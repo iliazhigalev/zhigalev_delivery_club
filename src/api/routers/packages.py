@@ -45,10 +45,9 @@ async def register_package(payload: PackageCreate, request: Request):
         res = await session.execute(
             select(PackageType).where(PackageType.id == pkg.type_id)
         )
-        t = res.scalar_one()
+        res.scalar_one()
 
     out = PackageOut.from_orm(pkg)
-    out.type_name = t.name
     return out
 
 
@@ -85,9 +84,8 @@ async def get_my_packages(
             res = await session.execute(
                 select(PackageType).where(PackageType.id == p.type_id)
             )
-            t = res.scalar_one()
+            res.scalar_one()
             po = PackageOut.from_orm(p)
-            po.type_name = t.name
             out.append(po)
 
     return out
@@ -110,10 +108,9 @@ async def get_package(pkg_id: UUID, request: Request):
         res = await session.execute(
             select(PackageType).where(PackageType.id == p.type_id)
         )
-        t = res.scalar_one()
+        res.scalar_one()
 
     out = PackageOut.from_orm(p)
-    out.type_name = t.name
     return out
 
 

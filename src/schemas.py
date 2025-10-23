@@ -39,7 +39,6 @@ class PackageOut(BaseModel):
     name: str
     weight_kg: Decimal
     type_id: int
-    type_name: str
     contents_value_usd: Decimal
     delivery_cost_rub: Optional[Decimal]
     company_id: Optional[int]
@@ -47,6 +46,7 @@ class PackageOut(BaseModel):
 
     class Config:
         orm_mode = True
+        from_attributes = True
 
 
 class PaginatedPackages(BaseModel):

@@ -12,7 +12,6 @@ ENV PATH="/root/.local/bin:$PATH"
 
 WORKDIR /app
 
-# ДОБАВЬ ЭТУ СТРОКУ:
 ENV PYTHONPATH="/app/src:${PYTHONPATH}"
 
 COPY pyproject.toml poetry.lock ./

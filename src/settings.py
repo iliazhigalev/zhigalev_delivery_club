@@ -15,9 +15,9 @@ class Settings(BaseSettings):
 
     SESSION_COOKIE: str = "session_id"
     CBR_CACHE_KEY: str = "cbr_usd_rub"
-    CBR_TTL_SECONDS: int = 60 * 60  # 1 час
+    CBR_TTL_SECONDS: int = 60 * 60
 
-    DELIVERY_RATE_INTERVAL_SECONDS: int = 300  # 5 минут
+    DELIVERY_RATE_INTERVAL_SECONDS: int = 300
 
     APP_NAME: str = "Zhigalev Delivery Club"
     DEBUG: bool = True

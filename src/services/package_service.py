@@ -12,7 +12,6 @@ from src.settings import settings
 
 logger = logging.getLogger(__name__)
 
-# Инициализация Redis клиента
 redis_client = redis.from_url(settings.REDIS_DSN, decode_responses=True)
 
 

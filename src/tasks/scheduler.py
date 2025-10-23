@@ -9,7 +9,6 @@ from src.settings import settings
 logger = logging.getLogger(__name__)
 
 
-# Создаём глобальный экземпляр планировщика
 scheduler = AsyncIOScheduler()
 
 
@@ -20,9 +19,9 @@ async def safe_compute_delivery_costs():
     """
     try:
         updated = await compute_delivery_costs_for_unprocessed()
-        logger.info(f"✅ Delivery costs updated for {updated} packages.")
+        logger.info(f"Delivery costs updated for {updated} packages.")
     except Exception as e:
-        logger.exception(f"❌ Error while computing delivery costs: {e}")
+        logger.exception(f"Error while computing delivery costs: {e}")
 
 
 def _on_job_event(event):
@@ -48,11 +47,10 @@ def start_scheduler():
         trigger=IntervalTrigger(seconds=settings.DELIVERY_RATE_INTERVAL_SECONDS),
         id="compute_delivery_costs",
         replace_existing=True,
-        max_instances=1,  # не запускать несколько копий одновременно
-        coalesce=True,  # объединять пропущенные вызовы
+        max_instances=1,
+        coalesce=True,
     )
 
-    # Подписка на события (успех/ошибка)
     scheduler.add_listener(_on_job_event, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
 
     scheduler.start()

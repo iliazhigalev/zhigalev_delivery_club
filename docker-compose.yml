@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   db:
-    image: postgres:17
+    image: postgres:18
     env_file: .env
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -19,7 +19,7 @@ services:
       retries: 5
 
   redis:
-    image: redis:7
+    image: redis:8
     ports:
       - "6379:6379"
     healthcheck:
