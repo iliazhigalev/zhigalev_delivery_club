@@ -1,37 +1,40 @@
-from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class Settings(BaseSettings):
+class MainSettings(BaseSettings):
     """
     Конфигурация приложения
     """
 
+    DEBUG: bool = False
+
+    APP_HOST: str = "0.0.0.0"
+    APP_PORT: int = 8000
+
+    POSTGRES_DB: str
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
     DATABASE_URL: str
 
-    REDIS_DSN: str
+    REDIS_HOST: str = "redis"
+    REDIS_PORT: int = 6379
+    REDIS_PASSWORD: str = None
+    REDIS_DB: int = 0
 
-    CBR_URL: str = "https://www.cbr-xml-daily.ru/daily_json.js"
-
-    SESSION_COOKIE: str = "session_id"
-    CBR_CACHE_KEY: str = "cbr_usd_rub"
-    CBR_TTL_SECONDS: int = 60 * 60
-
-    DELIVERY_RATE_INTERVAL_SECONDS: int = 300
-
-    APP_NAME: str = "Zhigalev Delivery Club"
-    DEBUG: bool = True
     ENV: str = "development"
+
+    CELERY_BROKER_URL: str
+    CELERY_RESULT_BACKEND: str
+
+    SECRET_KEY: str
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
     )
 
 
-@lru_cache()
-def get_settings() -> Settings:
-    """Возвращает кэшированный объект настроек."""
-    return Settings()
+def get_settings() -> MainSettings:
+    return MainSettings()
 
 
 settings = get_settings()

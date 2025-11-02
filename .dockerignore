@@ -1,6 +1,4 @@
-.git
 .gitignore
-README.md
 
 __pycache__
 *.pyc
@@ -19,8 +17,6 @@ venv.bak/
 *.swp
 *.swo
 
-Dockerfile
-docker-compose.yml
 .dockerignore
 
 *.log

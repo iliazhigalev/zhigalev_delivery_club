@@ -35,6 +35,13 @@ venv.bak/
 
 .idea/
 
+celerybeat-schedule
+celerybeat-schedule.*
+
+docker/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+alembic/versions/__pycache__/
+.python-version

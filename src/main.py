@@ -1,95 +1,39 @@
-import uuid
-import logging
 import uvicorn
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from fastapi.routing import APIRouter
+from src.settings import settings
+from src.services.ping_service import service_router
+from src.api.handlers import router
+from src.redis_client import get_redis_client
+from middleware.session_middleware import SessionMiddleware
 
 
-from api.routers import packages
-from data.db import init_db
-from tasks.scheduler import start_scheduler, run_once_now
-from settings import settings
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    redis_client = await get_redis_client()
+    app.state.redis = redis_client
 
+    yield
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s - %(message)s"
-)
-logger = logging.getLogger("delivery_service")
+    if redis_client:
+        await redis_client.close()
 
 
 app = FastAPI(
     title="Delivery Service",
-    version="1.0",
     description="Микросервис для расчёта стоимости доставки и синхронизации пакетов.",
+    lifespan=lifespan,
 )
 
-app.include_router(packages.router)
+app.add_middleware(SessionMiddleware)
 
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+main_api_router = APIRouter()
+main_api_router.include_router(
+    router, prefix="/api", tags=["package_and_package_types"]
 )
-
-
-@app.middleware("http")
-async def session_middleware(request: Request, call_next):
-    cookie_name = settings.SESSION_COOKIE
-    session_id = request.cookies.get(cookie_name)
-
-    if not session_id:
-        session_id = str(uuid.uuid4())
-        new_cookie = True
-    else:
-        new_cookie = False
-
-    request.state.session_id = session_id
-
-    response = await call_next(request)
-    if new_cookie:
-        response.set_cookie(
-            key=cookie_name,
-            value=session_id,
-            httponly=True,
-            secure=False,
-            samesite="lax",
-        )
-    return response
-
-
-@app.on_event("startup")
-async def on_startup():
-    logger.info("Initializing database connection...")
-    await init_db()
-
-    logger.info("Starting scheduler...")
-    start_scheduler()
-
-    logger.info("Application startup complete.")
-
-
-@app.post("/admin/trigger_compute")
-async def trigger_compute():
-    """
-    Админ-эндпоинт: принудительно запустить расчёт стоимости доставок.
-    Используется для отладки и ручного тестирования.
-    """
-    count = await run_once_now()
-    return {"processed_packages": count}
-
-
-@app.get("/")
-async def root():
-    return {"message": "FastAPI backend is running"}
-
+main_api_router.include_router(service_router, tags=["service"])
+app.include_router(main_api_router)
 
 if __name__ == "__main__":
-    uvicorn.run(
-        "src.main:app",
-        host=settings.HOST or "0.0.0.0",
-        port=settings.PORT or 8000,
-        reload=settings.DEBUG,
-    )
+    uvicorn.run(app, host=settings.APP_HOST, port=settings.APP_PORT)
