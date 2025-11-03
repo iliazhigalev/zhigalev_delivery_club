@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "fastapi-project"
+version = "0.1.0"
+description = "FastAPI backend service"
+authors = ["eygotti"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+fastapi = ">=0.119.0,<0.120.0"
+uvicorn = {extras = ["standard"], version = ">=0.38.0,<0.39.0"}
+pydantic-settings = ">=2.11.0,<3.0.0"
+alembic = ">=1.17.0,<2.0.0"
+asyncpg = ">=0.30.0,<0.31.0"
+httpx = ">=0.28.1,<0.29.0"
+redis = "^5.0.0"
+apscheduler = "^3.11.0"
+celery = {extras = ["redis"], version = "^5.5.3"}
+envparse = "^0.2.0"
+aiohttp = "^3.9.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = ">=0.14.1,<0.15.0"
+pre-commit = ">=4.3.0,<5.0.0"
+black = ">=25.9.0,<26.0.0"
+pytest = ">=8.4.2,<9.0.0"
+pytest-asyncio = ">=1.2.0,<2.0.0"
+httpx = ">=0.28.1,<0.29.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
